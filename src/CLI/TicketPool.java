@@ -1,40 +1,18 @@
 package CLI;
 
-import CLIII.Ticket;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class TicketPool {
-    private int totalTickets;
     private final int maxCapacity;
     private final Queue<Ticket> tickets = new LinkedList<>();
-    private boolean simulationActive = true;
+    private int totalTickets;
     private boolean isWaitingPrinted = false;
+    private boolean simulationActive = true;
     private boolean isCustomerWaitingPrinted = false;
-    private long lastRetrievalTime = System.currentTimeMillis();
-
-    private synchronized void checkForTermination() {
-        if (totalTickets == 0 && tickets.isEmpty()) {
-            System.out.println("Tickets over...");
-            System.out.println("Thank you for using the Real-Time Ticket Management System!");
-            simulationActive = false;
-            notifyAll();
-            System.exit(0);
-        } else if (totalTickets == 0) {
-            long currentTime = System.currentTimeMillis();
-            long timeDifference = currentTime - lastRetrievalTime;
-
-            // If no ticket has been retrieved for a certain amount of time (indicating slow ticket retrieval)
-            if (timeDifference > 1000 && !isWaitingPrinted) {
-                System.out.println("Warning: Tickets are available.");
-                System.out.println("Customers are not retrieving them quickly due to a high retrieval rate.");
-                isWaitingPrinted = true; // Print the message only once
-            }
-        }
-    }
+    private long lastRetrievalTime = System.currentTimeMillis(); // To track the last retrieval
 
     public TicketPool(int maxCapacity) {
         this.maxCapacity = maxCapacity;
@@ -42,9 +20,9 @@ public class TicketPool {
     }
 
     public synchronized void addTicket(String eventName, double price, int vendorId) {
-        //if (!simulationActive) {
-        //   return;
-        //}
+        if (!simulationActive) {
+            return;
+        }
 
         if (totalTickets <= 0) {
             checkForTermination();
@@ -59,7 +37,6 @@ public class TicketPool {
                     isWaitingPrinted = true;
                 }
                 wait();
-
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 System.out.println("Vendor-" + vendorId + " interrupted while waiting.");
@@ -78,9 +55,9 @@ public class TicketPool {
     }
 
     public synchronized void removeTicket(int customerId) {
-        //if (!simulationActive) {
-          //  return;
-        //}
+        if (!simulationActive) {
+            return;
+        }
 
         while (tickets.isEmpty() && totalTickets > 0) {
             try {
@@ -115,6 +92,25 @@ public class TicketPool {
         this.totalTickets = totalTickets;
     }
 
+    private synchronized void checkForTermination() {
+        if (totalTickets == 0 && tickets.isEmpty()) {
+            System.out.println("Tickets over...");
+            System.out.println("Thank you for using the Real-Time Ticket Management System!");
+            simulationActive = false;
+            notifyAll();
+            System.exit(0);
+        } else if (totalTickets == 0) {
+            long currentTime = System.currentTimeMillis();
+            long timeDifference = currentTime - lastRetrievalTime;
+
+            // If no ticket has been retrieved for a certain amount of time (indicating slow ticket retrieval)
+            if (timeDifference > 1000 && !isWaitingPrinted) {  // Adjust 1000ms to your threshold
+                System.out.println("Warning: Tickets are available.");
+                System.out.println("Customers are not retrieving them quickly due to a high retrieval rate.");
+                isWaitingPrinted = true; // Print the message only once
+            }
+        }
+    }
     public boolean isSimulationActive() {
         return !simulationActive;
     }
