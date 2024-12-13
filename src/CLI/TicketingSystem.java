@@ -5,7 +5,6 @@ import java.util.Scanner;
 
 public class TicketingSystem {
     public static void main(String[] args) {
-        final String RED = "\u001B[31m";
         final String YELLOW = "\u001B[33m";
         final String RESET = "\u001B[0m"; // Reset color
 
@@ -47,7 +46,7 @@ public class TicketingSystem {
                 }
 
                 simulationStarted = true;
-                System.out.println(RED+"Ticket System Simulation Started.");
+                System.out.println("Ticket System Simulation Started.");
 
 
 
