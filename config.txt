@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 TotalTickets=100
 TicketReleaseRate=2
 TicketRetrievalRate=3
 MaxCapacity=12
+=======
+TotalTickets=1000
+TicketReleaseRate=2
+TicketRetrievalRate=3
+MaxCapacity=35
+>>>>>>> 6f77d25d43effb5b681124faced1af3cfa9b23b4
